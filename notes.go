@@ -227,5 +227,95 @@ func (u *user) changeEmail(email string) {
 }
 // => affects the pointer to the value => affect the original object itself
 
+////////////////////////////////////////////////////////////////////////////////
+// Interfaces
+////////////////////////////////////////////////////////////////////////////////
+
+// Interfaces provide a way to declare types that define only behavior. 
+// This behavior can be implemented by concrete types, such as struct or named types, via methods.
+
+// notifier is an interface that defines notification type behavior
+type notifier interface {
+	notify() //method
+}
+
+// sendNotification accepts values that implement the notifier
+// interface and sends notifications.
+func sendNotification(n notifier) {
+	n.notify()
+}
+
+// methods in Go are about behaviors
+// => polymorphism allowed: dont care about the type but the behavior (the fact that the object implements the interface)
+// https://play.golang.org/p/Lo1ucf1e9d
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Embedding / Composition
+////////////////////////////////////////////////////////////////////////////////
+
+// Embedding types allow us to share state or behavior between types.
+// The inner type never loses its identity.
+// !! This is not inheritance.
+// Through promotion, inner type fields and methods can be accessed through the outer type.
+// The outer type can override the inner type's behavior.
+
+type user struct {
+	name  string
+	email string
+}
+type admin struct {
+	user  // Embedded Type !!!
+	level string
+}
+
+
+// => // We can acces the inner type's method & fields directly.
+	ad.user.notify()
+
+// => // The inner type's method & fields are promoted AT RUNTIME. 
+	ad.notify()
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Packaging
+////////////////////////////////////////////////////////////////////////////////
+
+
+package animals
+
+type Dog struct {
+	Name string // exportable field -> start with capital letter 'N'
+	BarkStrength int // exportable field -> start with capital letter 'B'
+	age int // !!!! NON exportable field -> start with lower case letter 'a'
+}
+
+// => age is unexported field from an exported struct
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
