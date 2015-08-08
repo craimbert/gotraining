@@ -293,6 +293,142 @@ type Dog struct {
 
 // => age is unexported field from an exported struct
 
+////////////////////////////////////////////////////////////////////////////////
+
+
+// Instead of if / elsif / else block => use switch/case without any value -> truthness of expression
+
+switch { // -> true implied
+		case expr1:
+			do_something_1
+
+		case expr2:
+			do_something_2
+		}
+
+// infinite loop == while true
+for {
+	// do stuff
+	return
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// goroutines
+////////////////////////////////////////////////////////////////////////////////
+
+// Goroutines are functions that are created and scheduled to be run indenpently
+//$ export GOMAXPROCS=4 => to enable more than 1 go routines to run concurrently
+
+// wg is used to wait for the program to finish.
+var wg sync.WaitGroup
+
+// Add a count of two goroutines allowed
+wg.Add(2)
+
+// Create a goroutine from the lowercase function.
+go lowercase()
+
+func lowercase() {
+	// do stuff...
+
+	wg.Done() // --> give back 1 mutex
+}
+
+// in the main or any function that needs to wait when go routines are getting triggered:
+wg.Wait()
+
+
+// Declare an anonymous function and create a goroutine.
+go func() {
+	// do something....
+
+	// Decrements the count of the wait group.
+	wg.Done()
+}() // important () -> HAS TO BE a function call -> same way: object.Do()
+
+
+////////////////////////////////////////////////////////////////////////////////
+// goroutines - race conditions
+////////////////////////////////////////////////////////////////////////////////
+
+// A race condition is when two or more goroutines attempt to
+// read and write to the same resource at the same time.
+
+// Run: $ go run -race example1.go => add "-race" to pay attention to the race conditions
+
+// mutex is used to define a critical section of code.
+var mutex sync.Mutex
+
+// Only allow one goroutine through this
+// critical section at a time.
+mutex.Lock()
+{
+	// do stuff
+}
+mutex.Unlock()
+// Release the lock and allow any
+// waiting goroutine through.
+
+// Better declaration of mutex WITH the var which needs that mutex:
+var (
+	mutex sync.Mutex
+	counter int // SHARED data
+)
+
+// distinguish Readers and Writers => more than 1 reader allowed at same time
+var rwMutex sync.RWMutex 
+
+// Capture the current read count.
+// Keep this safe though we can due without this call.
+atomic.LoadInt64(&readCount)
+
+// Increment the read count value by 1.
+atomic.AddInt64(&readCount, 1)
+
+
+////////////////////////////////////////////////////////////////////////////////
+// goroutines - channels
+////////////////////////////////////////////////////////////////////////////////
+
+// Channels are a reference type that provide a safe mechanism to share data between goroutines.
+// a channel can have any nbr of senders and receivers
+// unbuffered & buffered channels
+
+// Create an unbuffered channel (accepting an int value).
+channel := make(chan int)
+
+// Send a value into that channel
+channel <- val
+
+// Spin off a new go routine
+go doSomething(channel)
+// with: 
+func doSomething(channel chan int) {
+	// Schedule the call to Done to tell main we are done.
+	defer wg.Done()
+	// -> avoid code replication
+
+	// Receive value
+	value, ok := <- channel
+
+	// Close the channel
+	close(channel)
+
+}
+
+
+// same job with buffered or unbuffered channel
+
+
+
+
+
+
+
+
+
 
 
 
