@@ -5,6 +5,7 @@
 package handlers
 
 import (
+	"fmt"
 	"encoding/json"
 	"net/http"
 )
@@ -27,4 +28,8 @@ func SendJSON(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(200)
 	json.NewEncoder(rw).Encode(&u)
+}
+
+func XY() {
+	fmt.Println("not tested")
 }

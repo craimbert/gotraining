@@ -1,0 +1,4 @@
+mode: set
+github.com/craimbert/gotraining/10-testing/01-testing/example4/handlers/handlers.go:14.15,16.2 1 1
+github.com/craimbert/gotraining/10-testing/01-testing/example4/handlers/handlers.go:19.56,31.2 4 1
+github.com/craimbert/gotraining/10-testing/01-testing/example4/handlers/handlers.go:33.11,35.2 1 0

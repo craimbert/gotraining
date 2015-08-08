@@ -15,7 +15,7 @@ import (
 
 // %v	the value in a default format
 // %#v	a Go-syntax representation of the value
-// %T	a Go-syntax representation of the type of the value
+// %T	a Go-syntax representation of the type of the value !!!!!
 // %t	Boolean: the word true or false
 // %d	Integer: base 10
 // %s	the uninterpreted bytes of the string or slice
@@ -340,7 +340,7 @@ func lowercase() {
 wg.Wait()
 
 
-// Declare an anonymous function and create a goroutine.
+// Create a goroutine launching an anonymous function
 go func() {
 	// do something....
 
@@ -418,40 +418,178 @@ func doSomething(channel chan int) {
 
 }
 
-
 // same job with buffered or unbuffered channel
 
+////////////////////////////////////////////////////////////////////////////////
+// goroutines - errors
+////////////////////////////////////////////////////////////////////////////////
+
+type error interface {
+	Error() string // an error 'returns' a string, always
+}
+
+// define new custom error type: has to contain a string & implement the interface "Error() string"
+type MyError struct {
+	s string
+}
+
+func (e *MyError) Error() string {
+	return e.s
+}
+
+// Example from JSON package:
+
+	// An UnmarshalTypeError describes a JSON value that was
+	// not appropriate for a value of a specific Go type.
+	type UnmarshalTypeError struct {
+		Value string       // description of JSON value
+		Type  reflect.Type // type of Go value it could not be assigned to
+	}
+
+	// Error implements the error interface.
+	func (e *UnmarshalTypeError) Error() string {
+		return "json: cannot unmarshal " + e.Value + " into Go value of type " + e.Type.String()
+	}
+
+	// Handle the error based on its type
+	err := Unmarshal([]byte(`{"name":"bill"}`), u)
+	if err != nil {
+		switch e := err.(type) {
+		case *UnmarshalTypeError:
+			fmt.Printf("UnmarshalTypeError: Value[%s] Type[%v]\n", e.Value, e.Type)
+		case *InvalidUnmarshalError:
+			fmt.Printf("InvalidUnmarshalError: Type[%v]\n", e.Type)
+		default: // generic default error handling
+			fmt.Println(err)
+	}
+
+// Another way of checking the error		
+e := err.(*CustomTypeError)
+fmt.Printf("CustomTypeError: value [%s] Type[%v]\n", e.Value, e.Type)
+
+// Create a basic error
+errors.New("false flag")
+
+
+////////////////////////////////////////////////////////////////////////////////
+// goroutines - patterns
+////////////////////////////////////////////////////////////////////////////////
+
+// infinite loop on the channel as long as channel is opened
+for dataReceived := range channel {
+	dataReceived.DoSomething()
+}
+// => no need for "data, ok := <- channel" 
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+// Testing
+////////////////////////////////////////////////////////////////////////////////
+
+// file names end in "_test.go" => mandatory to make compile aware and not compile it
+func TestDownload(t *testing.T) {
+
+} 
+// => func name is "TestFunctionToTest"
+
+// -> get object t:
+t.Log ~ fmt.Println
+t.Logf ~ fmt.Printf
+t.Fatal -> abort test & print log
+t.Errorf -> print error log but does NOT abort
+
+test succeeds <=> test does not fail <=> no t.Fatal gets called
+
+// Run test: 
+$ go test // => NO log print except it test fails
+$ go test -v // => force log print
+$ go test -v ./... // include all files in the further subtree
+
+
+/////// Example Tests
+func ExampleSendJSON() { // tied with function SendJSON
+}
+// at the end, a comment with "Output:" and then expected result:
+
+// Output:
+// {Bill bill@ardanstudios.com}
+
+
+$ go test -cover
+       coverage: 83.3% of statements
+
+$ go test -coverprofile cover.out
+	PASS
+	coverage: 83.3% of statements
+	ok  	github.com/craimbert/gotraining/10-testing/01-testing/example4/handlers	0.011s
+	-> generate cover.out
+
+$ go tool cover -html cover.out -o coverage.html
+-> generate coverage.html -> open the html page in web browser to see
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Standard Library
+////////////////////////////////////////////////////////////////////////////////
+
+// Binary arguments:
+	// init is called before main.
+	func init() {
+		if len(os.Args) != 2 {
+			fmt.Fprintln(os.Stderr, "Usage: ./example2 <url>")
+			os.Exit(2)
+		}
+	}
+
+// Binary options:
+
+// init is called before main.
+func init() {
+	// Let the flag package handle the options; -o for output and -s for silent.
+	flag.StringVar(&Config.DestFile, "o", "", "output file")
+	flag.BoolVar(&Config.Silent, "s", false, "silent (do not output to stdout)")
+	flag.Parse()
+	if len(flag.Args()) != 1 {
+		fmt.Println("Usage: ./example3 [options] <url>")
+		os.Exit(2)
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// HTTP
+////////////////////////////////////////////////////////////////////////////////
+
+with req.URL.Query().Get("key")
+$ curl "localhost:4000/charles?key=123"
+Hello world 123
+
+with req.URL.Query()
+$ curl "localhost:4000/charles?key=123&test=charles"
+Hello world map[test:[charles] key:[123]]
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+// JSON
+////////////////////////////////////////////////////////////////////////////////
+// Decode JSON 
+// https://github.com/craimbert/gotraining/blob/master/11-standard_library/02-encoding/example1/example1.go
+
+CurrencyCode string `json:"currency_code"`
+CurrencyCode int `json:"currency_code, string"`
+CurrencyCode int `json:""` // => same json key
+CurrencyCode int `json:",omitempty"`
 
 
+// instead of Unmarshall:
+r := strings.NewReader(document) // document is the raw string
+dec := json.NewDecoder(r)
+err := dec.Decode(&ucp) // ucp is the destination struct
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// pretty print of jsons
+data, err := json.MarshalIndent(&ucp, "", "\t")
+fmt.Printf("%s\n", data)
 
 
 

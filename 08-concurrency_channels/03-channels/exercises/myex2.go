@@ -14,11 +14,11 @@ package main
 // Add Imports.
 
 // Declare a constant and set the value for the number of goroutines.
-
+const goroutineNbrs = 20
 // Declare a constant and set the value for the number of buffers.
 
 // Declare a wait group.
-
+var wg sync.WaitGroup
 // Declare a buffered channel of type string and initialize it based on
 // the constant you declared above.
 

@@ -19,7 +19,6 @@ var wg sync.WaitGroup
 
 // Declare a function for the goroutine. Pass in a name for the
 // routine and a channel of type int used to share the value back and forth.
-
 func goroutine(name string, channel chan int ) {
 	for {
 		// Receive on the channel, waiting for the integer.
@@ -55,8 +54,7 @@ func goroutine(name string, channel chan int ) {
 
 // main is the entry point for all Go programs.
 func main() {
-	// Declare and initialize an unbuffered channel
-	// of type int.
+	// Declare and initialize an unbuffered channel of type int.
 	channel := make(chan int)
 	// Increment the wait group for each goroutine
 	// to be created.
