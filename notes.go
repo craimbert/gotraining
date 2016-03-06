@@ -505,6 +505,7 @@ test succeeds <=> test does not fail <=> no t.Fatal gets called
 $ go test // => NO log print except it test fails
 $ go test -v // => force log print
 $ go test -v ./... // include all files in the further subtree
+$ go test -v -run TestEquals // -> run ONLY the tests matching the regex "TestEquals"
 
 
 /////// Example Tests
